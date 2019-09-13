@@ -1,7 +1,7 @@
 {
-  "name": "smalllyra",
+  "name": "sapp-music",
   "version": "1.0.0",
-  "description": "webpack支付宝小程序",
+  "description": "音乐小程序",
   "main": "app.js",
   "scripts": {
     "debug": "cross-env NODE_ENV=dev node --inspect --inspect-brk build/index.js",
@@ -9,8 +9,6 @@
     "dev": "cross-env NODE_ENV=dev node  build/index.js",
     "build": "cross-env NODE_ENV=prod node  build/index.js",
     "init": "cd ./dist && yarn i",
-    "start": "cd dist && appx-web-cli start",
-    "sim-ios": "cd dist && appx-web-cli run-ios"
   },
   "keywords": [
     "webpack",
