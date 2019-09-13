@@ -1,0 +1,9 @@
+{
+  "private": true,
+  "scripts": {
+    "ayarn-install": "ayarn install"
+  },
+  "dependencies": {
+    "mina-mixins": "^0.1.2"
+  }
+}

@@ -1,0 +1,87 @@
+<template>
+    <view class="home app">
+        <view class="app-top">
+            <view class="icon"></view>
+            <view class="text">Chicken Music</view>
+            <view class="app-top-icon"></view>
+        </view>
+        <router-item list="{{route}}" onJumpTo="jumpTo" active="{{active}}"></router-item>
+        <view class="content">
+            <swiper
+                    indicator-color="hsla(0,0%,100%,.5)"
+                    indicator-active-color="hsla(0,0%,100%,.8)"
+                    indicator-dots="{{true}}"
+                    autoplay="{{true}}"
+                    circular="{{true}}"
+                    duration="{{400}}"
+                    interval="{{3000}}">
+                <swiper-item>
+                    <view class="swiper-item-block">
+                        <image src="http://y.gtimg.cn/music/common/upload/MUSIC_FOCUS/1719083.jpg"></image>
+                    </view>
+                </swiper-item>
+                <swiper-item>
+                    <view class="swiper-item-block">
+                        <image src="http://y.gtimg.cn/music/common/upload/MUSIC_FOCUS/1719313.jpg"></image>
+                    </view>
+                </swiper-item>
+                <swiper-item>
+                    <view class="swiper-item-block">
+                        <image src="http://y.gtimg.cn/music/common/upload/MUSIC_FOCUS/1720581.jpg"></image>
+                    </view>
+                </swiper-item>
+            </swiper>
+        </view>
+    </view>
+</template>
+
+<script>
+const App = getApp();
+Page({
+  data: {
+    route: App.route,
+    active: App.routeActive,
+  },
+  jumpTo(target) {
+    const { index = 0, link = '' } = target;
+    this.setData({
+      active: index,
+    });
+    App.routeActive = index;
+    // my.redirectTo(link);
+  },
+});
+</script>
+
+<style lang="stylus">
+    .app
+        padding-top 120rpx
+    .app-top
+        position: relative;
+        height: 88rpx;
+        text-align: center;
+        color: #ffcd32;
+        font-size: 0;
+        .icon
+            display: inline-block;
+            vertical-align: top;
+            margin-top: 12rpx;
+            width: 60rpx;
+            height: 64rpx;
+            margin-right: 18rpx;
+            background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAABACAYAAABGHBTIAAAAAXNSR…E/hzJKRZRmUJpCKYWSILqpQAclcZ4VRzxx6qlRiY2JX4n+D3WTLgMWzmcSAAAAAElFTkSuQmCC");
+            background-size: 30rpx 32rpx;
+        .text
+            display inline-block
+            vertical-align top
+            line-height 88rpx
+            font-size 36rpx
+    .content
+        .swiper-item-block
+            width 100vw
+            height 300rpx
+            image
+                width 100vw
+                height 300rpx
+
+</style>

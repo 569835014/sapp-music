@@ -1,0 +1,51 @@
+<template>
+   <view class="nav-wrap">
+       <view
+               class="nav-item {{active===index?'router-link-active':''}}"
+               onTap="onJumpTo"
+               a:for="{{list}}"
+               data-link="{{item.text}}"
+               data-index="{{index}}"
+       >
+           <text class="nav-link">{{item.text}}</text>
+       </view>
+   </view>
+</template>
+
+<script>
+Component({
+  props: {
+    list: [],
+    active: 0,
+    onClickMe: () => {},
+    onJumpTo: () => {
+    },
+  },
+  methods: {
+    onJumpTo({ target }) {
+      this.props.onJumpTo(target.dataset);
+    },
+    onClickMe () {
+      this.props.onClickMe();
+    },
+  },
+});
+
+</script>
+
+<style lang="stylus">
+    .nav-wrap
+        display: flex;
+        height: 88rpx;
+        line-height: 88rpx;
+        font-size: 28rpx;
+        .nav-item
+            flex 1
+            text-align center
+        .nav-link
+            padding-bottom 10rpx
+        .router-link-active
+            .nav-link
+                color: #ffcd32;
+                border-bottom: 2px solid #ffcd32;
+</style>

@@ -1,0 +1,30 @@
+{
+  "extends": "standard",
+  "parser": "vue-eslint-parser",
+  "parserOptions": {
+    "parser": "babel-eslint"
+  },
+  "rules": {
+    "indent": ["error", 2, {"SwitchCase": 1}],
+    "semi": ["error", "always"],
+    "comma-dangle": ["error", "always-multiline"],
+    "keyword-spacing": ["error", { "before": true }],
+    "space-before-function-paren": 0,
+    "object-curly-spacing": ["error", "always"],
+    "space-infix-ops": ["error", {"int32Hint": true}],
+    "padded-blocks": ["error", "never"],
+    "no-var": 2,
+    "no-undef": 2,
+    "no-unused-vars": 0,
+    "no-tabs": 0,
+    "no-unneeded-ternary": 0,
+    "no-extra-boolean-cast": 0
+  },
+  "globals": {
+    "App": true,
+    "Component": true,
+    "my": true,
+    "Page": true,
+    "getApp": true
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "transparentTitle": "auto",
+  "usingComponents": {
+    "router-item":"/components/navigation/navigation"
+  }
+}
