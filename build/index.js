@@ -12,7 +12,6 @@ rm('-rf',[
     resolve(config.distPath,'./','*.acss'),
     resolve(config.distPath,'./','*-update.json'),
 ])
-debugger
 fs.writeFileSync(resolve(config.distPath, './app.json'), JSON.stringify(appConfig.json), 'utf8')
 const webpackConf = require(`./webpack.${process.env.NODE_ENV ? process.env.NODE_ENV : 'dev'}.conf`)
 const compiler = webpack(webpackConf)

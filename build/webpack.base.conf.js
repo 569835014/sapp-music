@@ -81,7 +81,7 @@ module.exports = {
                                 [
                                     "@babel/plugin-transform-runtime",
                                     {
-                                        "corejs": 2
+                                        "corejs": 3
                                     }
                                 ]
                             ]
@@ -100,7 +100,33 @@ module.exports = {
                                 template: 'axml',
                             }
                         }
-                    }
+                    },
+                    {
+                        loader: 'style-resources-loader',
+                        options: {
+                            patterns: [
+                                path.resolve(__dirname, '../src/assets/styl/variables/*.styl'),
+                                path.resolve(__dirname, '../src/assets/styl/mixins/*.styl'),
+                            ],
+                            injector: (source, resources) => {
+                                debugger
+                                const parts = parseComponent(source);
+                                const combineAll = type => resources
+                                    .filter(({ file }) => file.includes(type))
+                                    .map(({ content }) => content)
+                                    .join('');
+                                if (parts.styles && parts.styles.length) {
+                                    const style = parts.styles[0];
+                                    if (style.lang === 'stylus') {
+                                        const reg = new RegExp(`<${'style lang="stylus"'}>[\\\w\\W]*</${'style'}>`, 'g');
+                                        const stylus = combineAll('variables') + combineAll('mixins') + parts.styles[0].content;
+                                        source = source.replace(reg, `<style lang="stylus">${stylus}</style>`);
+                                    }
+                                }
+                                return source;
+                            },
+                        },
+                    },
                 ]
             },
             // {
@@ -159,7 +185,6 @@ module.exports = {
             //                 },
             //             },
             //         },
-            //
             //     ],
             //
             // },
@@ -183,7 +208,7 @@ module.exports = {
                         [
                             "@babel/plugin-transform-runtime",
                             {
-                                "corejs": 2
+                                "corejs": 3
                             }
                         ]
                     ]
@@ -266,7 +291,7 @@ module.exports = {
         }),
         new CopyWebpackPlugin([
             {
-                from: 'app.*',
+                from: 'app.json',
                 to: '',
                 context: 'src/',
 
@@ -295,12 +320,7 @@ module.exports = {
             {
                 from: 'src/images',
                 to: 'images',
-            },
-            {
-                from: 'assets/**/*.js',
-                to: '',
-                context: 'src/',
-            },
+            }
         ]),
         // new HappyPack(
         //     {
@@ -316,31 +336,31 @@ module.exports = {
         // ),
     ],
     optimization: {
-        // splitChunks: {
-        //     chunks: 'initial',
-        //     minSize: 30000, // 模块的最小体积
-        //     minChunks: 1, // 模块的最小被引用次数
-        //     maxAsyncRequests: 5, // 按需加载的最大并行请求数
-        //     maxInitialRequests: 3, // 一个入口最大并行请求数
-        //     automaticNameDelimiter: '~', // 文件名的连接符
-        //     name: true,
-        //     cacheGroups: { // 缓存组
-        //         commons: { // 公共模块
-        //             name: 'commons',
-        //             chunks: 'initial', // 入口处开始提取代码
-        //             minSize: 0, // 代码最小多大，进行抽离
-        //             minChunks: 2, // 代码复 2 次以上的抽离
-        //         },
-        //         vendors: {
-        //             test: /node_modules/,
-        //             name: 'vendors',
-        //             minSize: 0,
-        //             minChunks: 1,
-        //             chunks: 'initial',
-        //             priority: 1, // 该配置项是设置处理的优先级，数值越大越优先处理
-        //         },
-        //     },
-        // },
+        splitChunks: {
+            chunks: 'initial',
+            minSize: 30000, // 模块的最小体积
+            minChunks: 1, // 模块的最小被引用次数
+            maxAsyncRequests: 5, // 按需加载的最大并行请求数
+            maxInitialRequests: 3, // 一个入口最大并行请求数
+            automaticNameDelimiter: '~', // 文件名的连接符
+            name: true,
+            cacheGroups: { // 缓存组
+                commons: { // 公共模块
+                    name: 'commons',
+                    chunks: 'initial', // 入口处开始提取代码
+                    minSize: 0, // 代码最小多大，进行抽离
+                    minChunks: 2, // 代码复 2 次以上的抽离
+                },
+                vendors: {
+                    test: /node_modules/,
+                    name: 'vendors',
+                    minSize: 0,
+                    minChunks: 1,
+                    chunks: 'initial',
+                    priority: 1, // 该配置项是设置处理的优先级，数值越大越优先处理
+                },
+            },
+        },
     },
 
 };

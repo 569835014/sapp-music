@@ -33,7 +33,6 @@ class JsWebpackPlugin {
       compilation.hooks.optimizeChunkAssets.tapAsync({
         name: 'SplitChunksPlugin',
       }, (chunks, callback) => {
-        debugger
         let main = null;
         chunks.findIndex((chunk, _index) => {
           if (chunk.name === options.main || (chunk.id + '').endsWith(options.id)) {

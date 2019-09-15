@@ -38,7 +38,6 @@ class ReductionPlugins {
             result.entries.forEach((item)=>{
                 item.loaders.findIndex((list)=>{
                     if(includes(list.loader)){
-                        debugger
                         const key=item.id+''.replace('/src','')
                         rest[key]=Object.assign({},list.options)
                         rest[key].resource=item.resource

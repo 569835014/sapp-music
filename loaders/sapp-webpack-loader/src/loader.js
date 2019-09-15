@@ -49,6 +49,7 @@ function loader(content, callback) {
     const sAppScriptAst = require('./lib/move-template-into-script')(__sAppParts__, config);
     const scriptStr = gen(sAppScriptAst).code;
     const code=`${output} \n ${scriptStr}`
+    debugger
     return code
 }
 module.exports=loader
