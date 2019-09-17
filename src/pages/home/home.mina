@@ -15,25 +15,15 @@
                     circular="{{true}}"
                     duration="{{400}}"
                     interval="{{3000}}">
-                <swiper-item>
+                <swiper-item a:for="{{slider}}">
                     <view class="swiper-item-block">
-                        <image src="http://y.gtimg.cn/music/common/upload/MUSIC_FOCUS/1719083.jpg"></image>
-                    </view>
-                </swiper-item>
-                <swiper-item>
-                    <view class="swiper-item-block">
-                        <image src="http://y.gtimg.cn/music/common/upload/MUSIC_FOCUS/1719313.jpg"></image>
-                    </view>
-                </swiper-item>
-                <swiper-item>
-                    <view class="swiper-item-block">
-                        <image src="http://y.gtimg.cn/music/common/upload/MUSIC_FOCUS/1720581.jpg"></image>
+                        <image src="{{item.picUrl}}"></image>
                     </view>
                 </swiper-item>
             </swiper>
             <view class="list-title">热门歌单推荐</view>
             <view class="list-Itmes">
-                <view class="item" a:for="{{list}}">
+                <view class="item" a:for="{{list}}" data-id="{{item.dissid}}" onTap="redirectDisc">
                     <view class="icon">
                         <image class="needsClick" src="{{item.imgurl}}" width="60" height="60" alt=""></image>
                     </view>
@@ -56,9 +46,17 @@ Page({
     route: App.route,
     active: App.routeActive,
     list: [],
+    slider: [],
   },
   async onLoad() {
-    const result = await Api({
+    Api({
+      url: 'http://localhost:3000/music/slider',
+    }).then((result) => {
+      this.setData({
+        slider: result.slider,
+      });
+    });
+    Api({
       url: 'http://localhost:3000/music/getDiscList',
       data: {
         platform: 'yqq',
@@ -71,9 +69,10 @@ Page({
         rnd: Math.random(),
         format: 'json',
       },
-    });
-    this.setData({
-      list: result.list,
+    }).then((result) => {
+      this.setData({
+        list: result.list,
+      });
     });
   },
   jumpTo(target) {
@@ -83,6 +82,11 @@ Page({
     });
     App.routeActive = index;
     // my.redirectTo(link);
+  },
+  redirectDisc({ target }) {
+    my.navigateTo({
+      url: `/pages/disc/disc?id=${target.dataset.id}`,
+    });
   },
 });
 </script>

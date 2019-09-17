@@ -1,0 +1,28 @@
+<template>
+    <view class="disc app">
+    </view>
+</template>
+
+<script>
+import Api from '../../assets/utils/Api';
+const App = getApp();
+
+Page({
+  data: {
+  },
+  async onLoad() {
+    Api({
+      url: 'http://localhost:3000/music/getDisc',
+    }).then((result) => {
+      console.log(result);
+    });
+  },
+});
+</script>
+
+<style lang="stylus">
+    @import "../../assets/styl/mixins/mix.styl"
+    @import "../../assets/styl/varlables/var.styl"
+    .app
+        padding-top 120rpx
+</style>
