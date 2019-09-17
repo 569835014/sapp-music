@@ -66,16 +66,19 @@ class ReductionPlugins {
                     const item=rest[key]
                     const asstes=result.assets[id];
                     let size=0
-                    asstes.source=function () {
-                        const content=fs.readFileSync(path.resolve(item.resource),'utf-8')
-                        const parts=parseComponent(content).script||''
-                        size=parts.content.length;
-                        return parts.content
+                    if(asstes){
+                        asstes.source=function () {
+                            const content=fs.readFileSync(path.resolve(item.resource),'utf-8')
+                            const parts=parseComponent(content).script||''
+                            size=parts.content.length;
+                            return parts.content
+                        }
+                        asstes.size=function () {
+                            return size
+                        }
+                        result.assets[id]=asstes;
                     }
-                    asstes.size=function () {
-                        return size
-                    }
-                    result.assets[id]=asstes;
+
                 }
             }
             cb()

@@ -16,7 +16,9 @@
   ],
   "author": "minzhang",
   "license": "ISC",
-  "dependencies": {},
+  "dependencies": {
+    "@babel/runtime-corejs2": "^7.6.0"
+  },
   "devDependencies": {
     "@babel/core": "^7.5.4",
     "@babel/plugin-proposal-class-properties": "^7.5.5",

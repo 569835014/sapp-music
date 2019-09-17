@@ -81,7 +81,10 @@ module.exports = {
                                 [
                                     "@babel/plugin-transform-runtime",
                                     {
-                                        "corejs": 3
+                                        "corejs": 2,
+                                        "helpers": true,
+                                        "regenerator": true,
+                                        "useESModules": false
                                     }
                                 ]
                             ]
@@ -208,7 +211,10 @@ module.exports = {
                         [
                             "@babel/plugin-transform-runtime",
                             {
-                                "corejs": 3
+                                "corejs": 2,
+                                "helpers": true,
+                                "regenerator": true,
+                                "useESModules": false
                             }
                         ]
                     ]
@@ -292,6 +298,12 @@ module.exports = {
         new CopyWebpackPlugin([
             {
                 from: 'app.json',
+                to: '',
+                context: 'src/',
+
+            },
+            {
+                from: 'app.acss',
                 to: '',
                 context: 'src/',
 
