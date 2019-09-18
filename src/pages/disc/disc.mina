@@ -1,21 +1,123 @@
 <template>
     <view class="disc app">
+        <view id="top" class="bg-img" style="background-image:url({{info.logo}});transform: scale({{zoom}})">
+            <view class="play-wrapper">
+                <view class="play">
+                    <text class="icon-play"></text>
+                    <text class="text">随机播放全部</text>
+                </view>
+            </view>
+            <view class="filter"></view>
+        </view>
+        <scroll-view
+                style="transform: translate3d(0,{{moveTop?moveTop-startTop:0}}px,0)"
+                scroll-y="{{true}}"
+                onScrollToUpper="scrolltoupper"
+                onScroll="scroll"
+                onTouchMove="move"
+                onTouchStart="start"
+                onTouchEnd="end"
+                upper-threshold="{{50}}"
+                class="list">
+            <view class="song-list-wrapper">
+                <view class="song-list">
+                    <view a:for="{{info.songlist}}" class="item">
+                        <view class="content">
+                            <text class="h2 name">{{item.songname}}</text>
+                            <view class="desc">{{item.albumname}}</view>
+                        </view>
+                    </view>
+                </view>
+            </view>
+        </scroll-view>
+
     </view>
 </template>
 
 <script>
 import Api from '../../assets/utils/Api';
+
 const App = getApp();
 
 Page({
   data: {
+    topStart: false,
+    startTop: null,
+    moveTop: null,
+    bgHeight: 263,
+    zoom: 1,
+    info: {},
+
   },
-  async onLoad() {
+  async onLoad({ id }) {
     Api({
       url: 'http://localhost:3000/music/getDisc',
+      data: {
+        id,
+      },
     }).then((result) => {
-      console.log(result);
+      if (result && result.cdlist && result.cdlist.length > 0) {
+        this.setData({
+          info: result.cdlist[0],
+        });
+      }
     });
+    this.createSelectorQuery();
+  },
+
+  createSelectorQuery() {
+    my.createSelectorQuery().select('#top').boundingClientRect().exec((rect) => {
+      // console.log(rect.width)
+      this.setData({
+        bgHeight: rect.height,
+      });
+    });
+  },
+  zoom(moveTop) {
+    const { bgHeight = 263 } = this.data;
+    this.setData({
+      zoom: Math.max(1, 1 + (moveTop / bgHeight)),
+    });
+  },
+  scroll() {
+    // console.info(arguments);
+  },
+  move({ changedTouches }) {
+    const [move] = changedTouches || [];
+    const { topStart } = this.data;
+
+    if (!topStart){
+        this.setData({
+            startTop: move.clientY,
+        });
+        return;
+    }
+    this.setData({
+      moveTop: move.clientY,
+    });
+    const { startTop } = this.data;
+    this.zoom(move.clientY - startTop);
+  },
+  end() {
+    this.setData({
+      topStart: false,
+      startTop: null,
+      moveTop: null,
+      zoom: 1,
+    });
+  },
+  start({ changedTouches }) {
+    const [start] = changedTouches || [];
+    this.setData({
+      startTop: start.clientY,
+    });
+  },
+  scrolltoupper({ changedTouches }) {
+    // 滑动到了顶部，开始计算回弹距离
+    this.setData({
+      topStart: true,
+    });
+    // console.info(arguments);
   },
 });
 </script>
@@ -24,5 +126,86 @@ Page({
     @import "../../assets/styl/mixins/mix.styl"
     @import "../../assets/styl/varlables/var.styl"
     .app
-        padding-top 120rpx
+        padding-top 120 rpx
+
+    .disc
+        .bg-img
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-top: 263 * 2rpx;
+            -webkit-transform-origin: top;
+            transform-origin: top;
+            background-size: cover;
+
+        .filter
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(7, 17, 27, .4);
+
+        .play-wrapper
+            position: absolute;
+            bottom: 40 rpx;
+            z-index: 50;
+            width: 100%;
+
+        .play
+            box-sizing: border-box;
+            width: 270 rpx;
+            padding: 14 rpx 0;
+            margin: 0 auto;
+            text-align: center;
+            border: 1px solid #ffcd32;
+            color: #ffcd32;
+            border-radius: 100px;
+            font-size: 0;
+
+            .icon-play
+                display: inline-block;
+                vertical-align: middle;
+                margin-right: 12 rpx;
+                font-size: 32 rpx;
+
+            .text
+                display: inline-block;
+                vertical-align: middle;
+                font-size: 24 rpx;
+
+        .list
+            width: 100%;
+            background: #222;
+            height calc(100vh - (263 * 2rpx))
+            -webkit-overflow-scrolling: touch;
+
+            .song-list-wrapper
+                padding: 40 rpx 60 rpx;
+
+                .item
+                    display flex
+                    align-items: center;
+                    box-sizing: border-box;
+                    height: 128 rpx;
+                    font-size: 28 rpx;
+
+                .content
+                    flex: 1;
+                    line-height: 40 rpx;
+                    overflow: hidden;
+
+                    .name
+                        text-overflow: ellipsis;
+                        overflow: hidden;
+                        white-space: nowrap;
+                        color: #fff;
+                        font-weight bold
+
+                    .desc
+                        text-overflow: ellipsis;
+                        overflow: hidden;
+                        white-space: nowrap;
+                        margin-top: 8 rpx;
+                        color: hsla(0, 0%, 100%, .3);
 </style>

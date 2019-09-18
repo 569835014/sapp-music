@@ -3,8 +3,8 @@ export default function Api(options) {
     my.request({
       ...options,
       success(result) {
-        if (result && result.data && result.data.data) {
-          resolve(result.data.data);
+        if (result && result.data) {
+          resolve(result.data.data ? result.data.data : result.data);
         } else {
           resolve(true);
         }
