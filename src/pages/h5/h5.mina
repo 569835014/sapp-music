@@ -1,0 +1,28 @@
+<template>
+    <view class="h5 app">
+        <web-view src="{{link}}"></web-view>
+    </view>
+</template>
+
+<script>
+
+
+Page({
+  data: {
+   like:''
+  },
+  async onLoad({link}) {
+      this.setData({
+          link
+      })
+  },
+
+});
+</script>
+
+<style lang="stylus">
+    @import "../../assets/styl/mixins/mix.styl"
+    @import "../../assets/styl/varlables/var.styl"
+    .app
+        padding-top 120rpx
+</style>

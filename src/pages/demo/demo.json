@@ -1,0 +1,7 @@
+{
+  "transparentTitle": "auto",
+  "allowsBounceVertical": "NO",
+  "usingComponents": {
+    "router-item":"/components/navigation/navigation"
+  }
+}

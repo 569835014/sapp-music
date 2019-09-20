@@ -1,0 +1,196 @@
+<template>
+    <view class="page">
+        <view class="wrap" id="wrap">
+            <view
+                    class="scroll"
+                    id="scroll"
+                    catchTouchStart="start"
+                    catchTouchMove="move"
+                    catchTouchEnd="end"
+                    style="transform: translate3d(0,{{distY}}px,0);transition: transform {{duration/1000}}s;"
+            >
+                <view class="scroll-box">
+                    <view
+                            a:for="{{slides}}"
+                            style="background: {{item}};"
+                            class="scroll-item"
+
+                    >
+                        {{item}}
+                    </view>
+                </view>
+            </view>
+        </view>
+    </view>
+
+</template>
+<script>
+    const slideBgColors = 'green,gray,blueviolet,blue,rebeccapurple,yellowgreen,gold,darkslategray,brown,darkslategray,green,gray,blueviolet,blue,rebeccapurple,yellowgreen,gold,darkslategray,brown,darkslategray'.split(',');
+    const deceleration = 0.005;// 阻尼系数,越小越快
+    const maxTop = 100;
+
+    function getTime() {
+        return +new Date();
+    }
+
+    function momentum(current, start, time, lowerMargin, wrapperSize) {
+        let distance = current - start;
+        const speed = Math.abs(distance) / time;
+        let destination;
+        let duration;
+        destination = current + speed / deceleration * (distance < 0 ? -1 : 1);
+        duration = speed / deceleration;
+
+        if (destination < lowerMargin) {
+            destination = wrapperSize ? lowerMargin - (wrapperSize / 2.5 * (speed / 8)) : lowerMargin;
+            distance = Math.abs(destination - current);
+            duration = distance / speed;
+        } else if (destination > 0) {
+            destination = wrapperSize ? wrapperSize / 2.5 * (speed / 8) : 0;
+            distance = Math.abs(current) + destination;
+            duration = distance / speed;
+        }
+        return {
+            destination: Math.round(destination),
+            duration: duration,
+        };
+    }
+
+    const bounceTime = 500;
+    Page({
+        data: {
+            slides: slideBgColors,
+            maxScroll: 0,
+            distY: 0,
+        },
+        y: 0,
+        onReady() {
+            my.createSelectorQuery().select('#wrap').boundingClientRect()
+                .select('#scroll').boundingClientRect()
+                .exec((arg) => {
+                    const [warp, scroll] = arg;
+                    this.wrapY = warp.height;
+                    this.setData({
+                        maxScroll: scroll.height > warp.height ? warp.height - scroll.height : 0,
+                    });
+                });
+        },
+        start({ changedTouches }) {
+            const point = changedTouches[0];
+            this.moved = false;
+            this.isStart=true;
+            this.distY = 0;
+            this.startTime = getTime();
+            this.lastMoveTime = getTime();
+            this.startY = this.y;
+            this.absStartY = this.y;
+            this.pointY = point.pageY;
+        },
+        resetPosition: function (_time) {
+            let y = this.y;
+            const time = _time || 0;
+            if (this.y > 0) {
+                y = 0;
+            } else if (this.y < this.data.maxScroll) {
+                y = this.data.maxScroll;
+            }
+            if (y === this.y) {
+                return false;
+            }
+            this._translate(y, time);
+            return true;
+        },
+        move({ changedTouches }) {
+            console.info(this.isStart)
+            if(!this.isStart) return false
+            const point = changedTouches[0];
+            // 记录滚动的距离
+            const deltaY = point.pageY - this.pointY;
+            // 当前时间戳 节流用
+            const timestamp = +new Date();
+            let newY;
+            let absDistY;
+            this.pointY = point.pageY;
+            this.distY = this.y + deltaY;
+
+            absDistY = Math.abs(this.distY);
+            // 节流
+            if (timestamp - this.endTime > 300 && absDistY < 10) {
+                return;
+            }
+            // const y=this.y||0
+            newY = this.y + deltaY;
+            if (newY > 0 || newY < this.data.maxScroll) {
+                newY = this.y + deltaY / 3;
+            }
+            this.directionY = deltaY > 0 ? -1 : deltaY < 0 ? 1 : 0;
+            this.moved = true;
+            if(newY > maxTop){
+                this.resetPosition(400)
+                this.isStart=false
+                return
+            }
+            this._translate(newY);
+            if (timestamp - this.startTime > 300) {
+                this.startTime = timestamp;
+                this.startY = this.y;
+            }
+        },
+        end({ changedTouches }) {
+            this.isStart=false
+            let momentumY;
+            const duration = getTime() - this.startTime;
+            let newY = Math.round(this.y);
+            let time = 0;
+            const that = this;
+            this.endTime = getTime();
+
+            if (!this.moved) {
+                return;
+            }
+            if (this.resetPosition(bounceTime)) {
+                return;
+            }
+            // start momentum animation if needed
+            if (duration < 300 && Math.abs(this.startY - this.y) > 10) {
+                momentumY = momentum(this.y, this.startY, duration, this.data.maxScroll, this.wrapY);
+                newY = momentumY.destination;
+                time = momentumY.duration;
+                this._translate(newY, time);
+                setTimeout(function () {
+                    that.resetPosition(bounceTime);
+                }, time);
+            }
+        },
+        _translate: function (y, time) {
+            y = Math.round(y);
+            this.setData({
+                distY: y,
+                duration: time || 0,
+            });
+            this.y = y;
+        },
+    });
+</script>
+<style lang="stylus">
+    .page
+        width 100vw
+        height 100vh
+
+    .wrap
+        width 100vw
+        background rgb(179, 218, 200)
+        margin-top 200 rpx
+        height 600 rpx
+        position relative
+        overflow hidden
+
+        .scroll
+            position absolute
+            width 100vw
+            background rgb(245, 188, 95)
+
+        .scroll-item
+            width 100vw
+            height 100 rpx
+</style>

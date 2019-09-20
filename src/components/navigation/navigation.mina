@@ -13,23 +13,23 @@
 </template>
 
 <script>
-Component({
-  props: {
-    list: [],
-    active: 0,
-    onClickMe: () => {},
-    onJumpTo: () => {
-    },
-  },
-  methods: {
-    onJumpTo({ target }) {
-      this.props.onJumpTo(target.dataset);
-    },
-    onClickMe () {
-      this.props.onClickMe();
-    },
-  },
-});
+    Component({
+        props: {
+            list: [],
+            active: 0,
+            onClickMe: () => {},
+            onJumpTo: () => {
+            },
+        },
+        methods: {
+            onJumpTo({ target }) {
+                this.props.onJumpTo(target.dataset);
+            },
+            onClickMe () {
+                this.props.onClickMe();
+            },
+        },
+    });
 
 </script>
 

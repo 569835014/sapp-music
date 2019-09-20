@@ -16,7 +16,7 @@
                     duration="{{400}}"
                     interval="{{3000}}">
                 <swiper-item a:for="{{slider}}">
-                    <view class="swiper-item-block">
+                    <view onTap="jumpToH5" class="swiper-item-block" data-link="{{item.linkUrl}}">
                         <image src="{{item.picUrl}}"></image>
                     </view>
                 </swiper-item>
@@ -83,6 +83,12 @@ Page({
     App.routeActive = index;
     // my.redirectTo(link);
   },
+    jumpToH5({target}){
+        const { link = '' } = target.dataset;
+        my.navigateTo({
+            url:`/pages/h5/h5?link=${link}`
+        });
+    },
   redirectDisc({ target }) {
     my.navigateTo({
       url: `/pages/disc/disc?id=${target.dataset.id}`,

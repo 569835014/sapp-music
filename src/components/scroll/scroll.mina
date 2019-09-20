@@ -1,0 +1,39 @@
+<template>
+    <view class="scroll {{className}}" style="{{style}}" id="scroll{{uid}}">
+        <view class="wrap {{wrapClass}}" style="{{wrapStyle}}" id="wrap{{uid}}">
+            <slot></slot>
+        </view>
+    </view>
+</template>
+<script>
+const deceleration = 0.005;// 阻尼系数,越小越快
+const maxTop = 100;
+const n=0
+Component({
+  props: {
+    uid:n+1,
+    maxTop: maxTop,
+    className:'',
+    style:'',
+    wrapClass:'',
+    wrapStyle:'',
+    deceleration: deceleration,
+    distY: 0,
+  },
+
+  didMount() {
+    this.y = 0;
+    // my.createSelectorQuery().select(`#wrap${this.props.uid}`).boundingClientRect()
+    //   .select(`.scroll${this.props.uid}`).boundingClientRect()
+    //   .exec((arg) => {
+    //     const [warp, scroll] = arg;
+    //     this.wrapY = warp.height;
+    //     this.maxScroll = scroll.height > warp.height ? warp.height - scroll.height : 0;
+    //   });
+  },
+  methods: {},
+});
+</script>
+<style>
+
+</style>
