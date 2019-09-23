@@ -1,6 +1,7 @@
 {
   "transparentTitle": "auto",
   "usingComponents": {
-    "router-item":"/components/navigation/navigation"
+    "router-item":"/components/navigation/navigation",
+    "play":"/components/play/play"
   }
 }

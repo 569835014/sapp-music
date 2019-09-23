@@ -34,6 +34,8 @@
                 </view>
             </view>
         </view>
+        <play>
+        </play>
     </view>
 </template>
 

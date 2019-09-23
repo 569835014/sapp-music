@@ -61,7 +61,7 @@
         data: {
             slides: slideBgColors,
             maxScroll: 0,
-            distY: 0,
+
         },
         y: 0,
         onReady() {

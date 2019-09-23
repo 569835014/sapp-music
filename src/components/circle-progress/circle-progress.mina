@@ -1,0 +1,169 @@
+<template>
+    <view class="circleProgress_wrapper">
+        <view class="wrapper right">
+            <view class="circleProgress rightcircle" style="{{rightStyle}}"></view>
+        </view>
+        <view class="wrapper left">
+            <view class="circleProgress leftcircle" style="{{leftStyle}}"></view>
+        </view>
+    </view>
+</template>
+<script>
+Component({
+  data: {
+    rightStyle: "",
+    leftStyle:""
+  },
+  props: {
+    progress: 0,
+    update: () => {
+    },
+  },
+  didUpdate(prevProps) {
+    const { progress } = this.props;
+    const { progress: prevProgress } = prevProps;
+    if (progress !== prevProgress) {
+      this.styleRight(progress)
+      this.leftRight(progress)
+    }
+  },
+  methods: {
+
+    styleRight(prevProgress) {
+      let _styl = {};
+      let deg =45;
+      if (prevProgress < 50) {
+        _styl = [
+          'border-top-width:0.06rem',
+          'border-right-width:0.06rem',
+        ];
+        deg= Math.min((prevProgress / 50 * 180)+45, 225)
+      } else if (prevProgress === 50) {
+        _styl = [
+          'border-width:0.06rem'
+        ];
+      } else if (prevProgress > 50) {
+        _styl = [
+          'border-left-width:0.06rem',
+          'border-bottom-width:0.06rem',
+        ];
+      }
+      _styl.push(
+              `transform:rotate(${deg}deg)`,
+              'right: 0'
+      )
+      this.setData({
+        rightStyle: _styl.join(' ;'),
+      });
+    },
+    leftRight(prevProgress) {
+        debugger
+      let _styl = {};
+      let deg = 45;
+      if (prevProgress < 50) {
+        _styl = [
+          'border-bottom-width:0.06rem',
+          'border-left-width:0.06rem',
+        ];
+      } else if (prevProgress === 50) {
+        _styl = [
+          'border-width:0.06rem',
+
+        ];
+      } else if (prevProgress > 50) {
+        _styl = [
+          'border-width:0.06rem'
+        ];
+          const _prevProgress=prevProgress-50
+          deg= Math.min(_prevProgress / 50 * 180+45, 225);
+      }
+      _styl.push(
+              `transform:rotate(${deg}deg)`,
+
+      )
+      this.setData({
+        leftStyle: _styl.join(':'),
+      });
+    },
+  },
+});
+</script>
+<style lang="stylus">
+    .circleProgress_wrapper {
+        width: 64 rpx;
+        height: 64 rpx;
+        position: relative;
+    }
+
+    .wrapper {
+        width: 32 rpx;
+        height: 64 rpx;
+        position: absolute;
+        top: 0;
+        overflow: hidden;
+    }
+
+    .right {
+        right: 0;
+    }
+
+    .left {
+        left: 0;
+    }
+
+    .circleProgress {
+        width: 52 rpx;
+        height: 52 rpx;
+        border: 6 rpx solid rgb(232, 232, 12);
+        border-radius: 50%;
+        position: absolute;
+        top: 0;
+        transform: rotate(45deg);
+    }
+
+    .rightcircle {
+        border-top: 6 rpx solid rgb(203, 167, 50);
+        border-right: 6 rpx solid rgb(203, 167, 50);
+        right: 0;
+    }
+
+    .leftcircle {
+        border-color rgb(203, 167, 50)
+        border-bottom: 6 rpx solid rgb(203, 167, 50);
+        border-left: 6 rpx solid rgb(203, 167, 50);
+        left: 0;
+    }
+
+    @-webkit-keyframes circleProgressLoad_right {
+        0% {
+            border-top-width: 6 rpx;
+            border-right-width: 6 rpx;
+            -webkit-transform: rotate(45deg);
+        }
+        50% {
+            border-width 6 rpx
+            -webkit-transform: rotate(225deg);
+        }
+        100% {
+            border-left-width: 6 rpx;
+            border-bottom-width: 6 rpx;
+            -webkit-transform: rotate(225deg);
+        }
+    }
+
+    @-webkit-keyframes circleProgressLoad_left {
+        0% {
+            border-bottom-width: 6 rpx;
+            border-left-width: 6 rpx;
+            -webkit-transform: rotate(45deg);
+        }
+        50% {
+            border-width 6 rpx
+            -webkit-transform: rotate(45deg);
+        }
+        100% {
+            border-width 6 rpx
+            -webkit-transform: rotate(225deg);
+        }
+    }
+</style>

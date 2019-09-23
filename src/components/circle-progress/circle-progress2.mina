@@ -1,0 +1,95 @@
+<template>
+  <view class="circleProgress_wrapper">
+    <view class="wrapper right">
+      <view class="circleProgress rightcircle"></view>
+    </view>
+    <view class="wrapper left">
+      <view class="circleProgress leftcircle"></view>
+    </view>
+  </view>
+</template>
+<script>
+Component({
+  props:{
+    progress:0,
+    update:()=>{}
+  },
+  didUpdate(prevProps){
+    const {progress}=this.props;
+    const {progress:prevProgress}=this.prevProps
+  }
+});
+</script>
+<style lang="stylus">
+  .circleProgress_wrapper{
+    width: 64rpx;
+    height: 64rpx;
+    position: relative;
+  }
+
+  .wrapper{
+    width: 32rpx;
+    height: 64rpx;
+    position: absolute;
+    top:0;
+    overflow: hidden;
+  }
+  .right{
+    right:0;
+  }
+  .left{
+    left:0;
+  }
+  .circleProgress{
+    width: 52rpx;
+    height: 52rpx;
+    border:6rpx solid rgb(232, 232, 12);
+    border-radius: 50%;
+    position: absolute;
+    top:0;
+    -webkit-transform: rotate(45deg);
+  }
+  .rightcircle{
+    border-top:6rpx solid rgb(203,167,50);
+    border-right:6rpx solid rgb(203,167,50);
+    right:0;
+    -webkit-animation: circleProgressLoad_right 5s linear infinite;
+  }
+  .leftcircle{
+    border-bottom:6rpx solid rgb(203,167,50);
+    border-left:6rpx solid rgb(203,167,50);
+    left:0;
+    -webkit-animation: circleProgressLoad_left 5s linear infinite;
+  }
+  @-webkit-keyframes circleProgressLoad_right{
+    0%{
+      border-top-width:6rpx;
+      border-right-width:6rpx ;
+      -webkit-transform: rotate(45deg);
+    }
+    50%{
+      border-width 6rpx
+      -webkit-transform: rotate(225deg);
+    }
+    100%{
+      border-left-width:6rpx ;
+      border-bottom-width:6rpx ;
+      -webkit-transform: rotate(225deg);
+    }
+  }
+  @-webkit-keyframes circleProgressLoad_left{
+    0%{
+      border-bottom-width:6rpx ;
+      border-left-width:6rpx  ;
+      -webkit-transform: rotate(45deg);
+    }
+    50%{
+      border-width 6rpx
+      -webkit-transform: rotate(45deg);
+    }
+    100%{
+      border-width 6rpx
+      -webkit-transform: rotate(225deg);
+    }
+  }
+</style>

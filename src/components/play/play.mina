@@ -1,0 +1,39 @@
+<template>
+    <view class="play">
+        <view class="mini-player">
+            <circle-progress progress="{{progress}}"></circle-progress>
+        </view>
+        <slot></slot>
+    </view>
+</template>
+<script>
+    Component({
+        data:{
+            progress:0
+        },
+        didMount(){
+
+            setInterval(()=>{
+                const {progress}=this.data
+                this.setData({
+                    progress:progress+10
+                })
+            },1000)
+        }
+    });
+</script>
+<style lang="stylus">
+    @import "../../assets/styl/varlables/var.styl"
+    @import "../../assets/styl/mixins/mix.styl"
+    .play
+        .mini-player
+            display: flex
+            align-items: center
+            position: fixed
+            left: 0
+            bottom: 0
+            z-index: 180
+            width: 100%
+            height: 100vh
+            background: $color-highlight-background
+</style>

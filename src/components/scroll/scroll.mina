@@ -1,6 +1,12 @@
 <template>
-    <view class="scroll {{className}}" style="{{style}}" id="scroll{{uid}}">
-        <view class="wrap {{wrapClass}}" style="{{wrapStyle}}" id="wrap{{uid}}">
+    <view  class="wrap {{className}}"  style="{{style}}" id="wrap{{uid}}">
+        <view
+                catchTouchStart="start"
+                catchTouchMove="move"
+                catchTouchEnd="end"
+                style="{{scrollStyle}} transform: translate3d(0,{{distY}}px,0);transition: transform {{duration/1000}}s; scroll{{uid}}"
+                class="scroll {{scrollClass}}"
+                id="scroll{{uid}}">
             <slot></slot>
         </view>
     </view>
@@ -8,32 +14,181 @@
 <script>
 const deceleration = 0.005;// 阻尼系数,越小越快
 const maxTop = 100;
-const n=0
+const n = 0;
+function getTime() {
+  return +new Date();
+}
+function momentum(current, start, time, lowerMargin, wrapperSize) {
+    let distance = current - start;
+    const speed = Math.abs(distance) / time;
+    let destination;
+    let duration;
+    destination = current + speed / deceleration * (distance < 0 ? -1 : 1);
+    duration = speed / deceleration;
+
+    if (destination < lowerMargin) {
+        destination = wrapperSize ? lowerMargin - (wrapperSize / 2.5 * (speed / 8)) : lowerMargin;
+        distance = Math.abs(destination - current);
+        duration = distance / speed;
+    } else if (destination > 0) {
+        destination = wrapperSize ? wrapperSize / 2.5 * (speed / 8) : 0;
+        distance = Math.abs(current) + destination;
+        duration = distance / speed;
+    }
+    return {
+        destination: Math.round(destination),
+        duration: duration,
+    };
+}
+
+const bounceTime = 500;
 Component({
   props: {
-    uid:n+1,
+    uid: n + 1,
     maxTop: maxTop,
-    className:'',
-    style:'',
-    wrapClass:'',
-    wrapStyle:'',
+    className: '',
+    style: '',
+    scrollStyle: '',
+    scrollClass: '',
     deceleration: deceleration,
     distY: 0,
+    duration: 0,
+    list: [],
+      onUpdate:()=>{}
   },
 
   didMount() {
     this.y = 0;
-    // my.createSelectorQuery().select(`#wrap${this.props.uid}`).boundingClientRect()
-    //   .select(`.scroll${this.props.uid}`).boundingClientRect()
-    //   .exec((arg) => {
-    //     const [warp, scroll] = arg;
-    //     this.wrapY = warp.height;
-    //     this.maxScroll = scroll.height > warp.height ? warp.height - scroll.height : 0;
-    //   });
   },
-  methods: {},
+  didUpdate(nextProps) {
+    const { list: nextList } = this.props;
+    const { list } = nextProps;
+    if (list !== nextList || list.length !== nextList.length) {
+      setTimeout(() => {
+        this.updateMaxScroll();
+      }, 100);
+    }
+  },
+  methods: {
+      update({distY,duration}){
+        this.props.onUpdate(distY,duration)
+      },
+    updateMaxScroll() {
+      my.createSelectorQuery().select(`#wrap${this.props.uid}`).boundingClientRect()
+        .select(`#scroll${this.props.uid}`).boundingClientRect()
+        .exec((arg) => {;
+          const [warp, scroll] = arg;
+          this.wrapY = warp.height;
+          this.maxScroll = scroll.height > warp.height ? warp.height - scroll.height : 0;
+          console.log(this.maxScroll);
+        });
+    },
+    start({ changedTouches }) {
+      const point = changedTouches[0];
+      this.moved = false;
+      this.isStart = true;
+      this.distY = 0;
+      this.startTime = getTime();
+      this.lastMoveTime = getTime();
+      this.startY = this.y;
+      this.absStartY = this.y;
+      this.pointY = point.pageY;
+    },
+    resetPosition: function (_time) {
+      let y = this.y;
+      const time = _time || 0;
+      if (this.y > 0) {
+        y = 0;
+      } else if (this.y < this.maxScroll) {
+        y = this.maxScroll;
+      }
+      if (y === this.y) {
+        return false;
+      }
+      this._translate(y, time);
+      return true;
+    },
+    move({ changedTouches }) {
+      if (!this.isStart) return false;
+      const point = changedTouches[0];
+      // 记录滚动的距离
+      const deltaY = point.pageY - this.pointY;
+      // 当前时间戳 节流用
+      const timestamp = +new Date();
+      let newY;
+      let absDistY;
+      this.pointY = point.pageY;
+      this.distY = this.y + deltaY;
+
+      absDistY = Math.abs(this.distY);
+      // 节流
+      if (timestamp - this.endTime > 300 && absDistY < 10) {
+        return;
+      }
+      // const y=this.y||0
+      newY = this.y + deltaY;
+      if (newY > 0 || newY < this.maxScroll) {
+        newY = this.y + deltaY / 3;
+      }
+      this.directionY = deltaY > 0 ? -1 : deltaY < 0 ? 1 : 0;
+      this.moved = true;
+      if (newY > maxTop) {
+        this.resetPosition(400);
+        this.isStart = false;
+        return;
+      }
+      this._translate(newY);
+      if (timestamp - this.startTime > 300) {
+        this.startTime = timestamp;
+        this.startY = this.y;
+      }
+    },
+    end({ changedTouches }) {
+      this.isStart = true;
+      let momentumY;
+      const duration = getTime() - this.startTime;
+      let newY = Math.round(this.y);
+      let time = 0;
+      const that = this;
+      this.endTime = getTime();
+
+      if (!this.moved) {
+        return;
+      }
+      if (this.resetPosition(bounceTime)) {
+        return;
+      }
+      // start momentum animation if needed
+      if (duration < 300 && Math.abs(this.startY - this.y) > 10) {
+        momentumY = momentum(this.y, this.startY, duration, this.maxScroll, this.wrapY);
+        newY = momentumY.destination;
+        time = momentumY.duration;
+        this._translate(newY, time);
+        setTimeout(function () {
+          that.resetPosition(bounceTime);
+        }, time);
+      }
+    },
+    _translate: function (y, time) {
+      y = Math.round(y);
+      this.update({
+        distY: y,
+        duration: time || 0,
+      });
+      this.y = y;
+    },
+  },
 });
 </script>
-<style>
+<style lang="stylus">
+    .wrap
+        width 100%
+        background rgb(179, 218, 200)
+        height 100%
+        position relative
+        overflow hidden
+        .scroll
+            position absolute
+            width 100%
 
 </style>

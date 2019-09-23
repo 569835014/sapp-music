@@ -1,6 +1,6 @@
 <template>
     <view class="disc app">
-        <view id="top" class="bg-img" style="background-image:url({{info.logo}});transform: scale({{zoom}})">
+        <view id="top" class="bg-img" style="background-image:url({{info.logo}});transform: scale({{zoom}});transition: transform {{duration/1000}}s; ">
             <view class="play-wrapper">
                 <view class="play">
                     <text class="icon-play"></text>
@@ -30,8 +30,22 @@
 <!--                </view>-->
 <!--            </view>-->
 <!--        </scroll-view>-->
-        <scroll>
-            sdafdsadds
+        <scroll
+                onUpdate="update"
+                distY="{{distY}}"
+                duration="{{duration}}"
+                className="list"
+                list="{{info.songlist}}">
+            <view class="song-list-wrapper">
+                <view class="song-list">
+                    <view a:for="{{info.songlist}}" class="item">
+                        <view class="content">
+                            <text class="h2 name">{{item.songname}}</text>
+                            <view class="desc">{{item.albumname}}</view>
+                        </view>
+                    </view>
+                </view>
+            </view>
         </scroll>
     </view>
 </template>
@@ -49,7 +63,8 @@ Page({
     bgHeight: 263,
     zoom: 1,
     info: {},
-
+    distY: 0,
+    duration: 0,
   },
   async onLoad({ id }) {
     Api({
@@ -64,13 +79,21 @@ Page({
         });
       }
     });
-    this.createSelectorQuery();
+    // this.createSelectorQuery();
   },
-
+  update(distY, duration) {
+      if(distY>0||distY===0){
+          this.zoom(distY)
+      }
+    this.setData({
+      distY,
+      duration,
+    });
+  },
   createSelectorQuery() {
-      my.createSelectorQuery().select('#top').exec((res)=>{
-          console.info(res)
-      })
+    my.createSelectorQuery().select('#top').exec((res) => {
+      console.info(res);
+    });
     my.createSelectorQuery().select('#top').boundingClientRect().exec((rect) => {
       // console.log(rect.width)
       this.setData({
@@ -91,16 +114,17 @@ Page({
     const [move] = changedTouches || [];
     const { topStart } = this.data;
 
-    if (!topStart){
-        this.setData({
-            startTop: move.clientY,
-        });
-        return;
+    if (!topStart) {
+      this.setData({
+        startTop: move.clientY,
+      });
+      return;
     }
+    const { startTop } = this.data;
+    if (move.clientY < startTop) return;
     this.setData({
       moveTop: move.clientY,
     });
-    const { startTop } = this.data;
     this.zoom(move.clientY - startTop);
   },
   end() {
@@ -134,8 +158,12 @@ Page({
         padding-top 120 rpx
 
     .disc
+        width 100vw
+        height 100vh
+        overflow hidden
         .bg-img
             position: relative;
+            z-index 5;
             width: 100%;
             height: 0;
             padding-top: 263 * 2rpx;
@@ -150,7 +178,7 @@ Page({
             width: 100%;
             height: 100%;
             background: rgba(7, 17, 27, .4);
-
+            z-index 3
         .play-wrapper
             position: absolute;
             bottom: 40 rpx;
